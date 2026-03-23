@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  role      String   // "ADMIN", "TEACHER", "STUDENT"
+  password  String   // In reality, this should be a hashed password
+  
+  // For students
+  grade     String?
+  guardian  String?
+  
+  // For teachers
+  subject   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  payments  Payment[]
+  attendance Attendance[]
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  status    String   // "PAID", "PENDING"
+  date      DateTime @default(now())
+  
+  studentId Int
+  student   User     @relation(fields: [studentId], references: [id])
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  status    String   // "PRESENT", "ABSENT", "LATE"
+  
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
