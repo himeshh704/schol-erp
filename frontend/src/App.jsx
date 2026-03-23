@@ -5,6 +5,8 @@ import {
   BookOpen, CheckCircle, Save
 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   
@@ -32,7 +34,7 @@ function App() {
 
   const loadDashboardStats = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/stats');
+      const response = await fetch(`${API_BASE_URL}/stats`);
       const data = await response.json();
       setStats({
         totalStudents: data.totalStudents || 0,
@@ -47,8 +49,8 @@ function App() {
   const fetchAttendanceData = async (date) => {
     try {
       const [usersRes, attRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users?role=STUDENT'),
-        fetch(`http://localhost:5000/api/attendance?date=${date}`)
+        fetch(`${API_BASE_URL}/users?role=STUDENT`),
+        fetch(`${API_BASE_URL}/attendance?date=${date}`)
       ]);
       const users = await usersRes.json();
       const attData = await attRes.json();
@@ -68,7 +70,7 @@ function App() {
 
   const loadTeachers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/users?role=TEACHER');
+      const response = await fetch(`${API_BASE_URL}/users?role=TEACHER`);
       const data = await response.json();
       setTeachersList(data);
     } catch (error) {
@@ -86,7 +88,7 @@ function App() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, role: 'STUDENT' })
@@ -107,7 +109,7 @@ function App() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...teacherData, role: 'TEACHER' })
@@ -132,7 +134,7 @@ function App() {
       status: attendanceRecords[userId]
     }));
     try {
-      await fetch('http://localhost:5000/api/attendance', {
+      await fetch(`${API_BASE_URL}/attendance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date: attendanceDate, records: recordsArray })

@@ -1,11 +1,16 @@
+require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
-const path = require('path');
 
-// Initialize SQLite database
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, 'database.sqlite'),
-  logging: false
+// Initialize PostgreSQL database connection over SSL
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
 });
 
 // Models for the ERP System
